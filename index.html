@@ -1,240 +1,69 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>بوابة العرّاب — 777</title>
+<meta charset="utf-8">
+<title>بوابة العرّاب</title>
 <style>
-  :root{
-    --bg:#050505;
-    --panel:#071012;
-    --accent:#00f0c0; /* أخضر زمردي */
-    --gold:#e7c95a;
-    --muted:#9aa7a6;
-    font-family: "Cairo", "Noto Kufi Arabic", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  body {
+    background:#000;
+    color:gold;
+    font-family:"Cairo",sans-serif;
+    text-align:center;
+    padding-top:100px;
   }
-  html,body{height:100%;margin:0;background:linear-gradient(180deg,#000 0%, #051010 60%);color:var(--accent);-webkit-font-smoothing:antialiased;}
-  .wrap{max-width:980px;margin:40px auto;padding:20px;}
-  header{text-align:center;padding:30px 20px;}
-  h1{font-size:40px;color:var(--gold);text-shadow:0 6px 28px rgba(0,0,0,.6);margin:0 0 12px;}
-  .sub{color:var(--muted);margin-bottom:22px;font-size:16px;}
-  nav{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:28px;}
-  .btn{
-    background:transparent;border:2px solid rgba(0,240,192,0.12);
-    color:var(--accent);padding:12px 18px;border-radius:12px;
-    cursor:pointer;font-size:16px;min-width:140px;backdrop-filter: blur(6px);
-    transition:all .18s ease;
+  select {
+    font-size:20px;
+    padding:10px 20px;
+    border:2px solid gold;
+    background:linear-gradient(145deg,#1a1400,#3c3000);
+    color:gold;
+    border-radius:10px;
+    cursor:pointer;
+    box-shadow:0 0 15px rgba(255,215,0,0.3);
   }
-  .btn:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.6);border-color:var(--accent);}
-  .btn.primary{background:linear-gradient(90deg,#00f0c0 0%, #00d4b0 100%);color:#001;border:font-weight:700;}
-  #content{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.2));padding:22px;border-radius:14px;min-height:360px;color:#cfeee3;box-shadow:0 10px 40px rgba(0,0,0,.6);}
-  .notice{border:2px dashed rgba(0,240,192,0.12);padding:18px;border-radius:12px;color:var(--muted);margin-top:20px;text-align:center}
-  footer{margin-top:28px;text-align:center;color:var(--muted);font-size:13px}
-  .menu-hidden{display:none}
-  @media (max-width:520px){h1{font-size:28px}.btn{min-width:120px;padding:10px 12px}}
+  iframe {
+    width:90%;
+    height:80vh;
+    margin-top:40px;
+    border:none;
+    display:none;
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <h1>بوابة العرّاب الفرعونية 👑</h1>
-    <div class="sub">اختر صفحة لعرضها هنا — داخل نفس الواجهة. (الملفات تُفحص تلقائيًا)</div>
-  </header>
-
-  <nav id="nav"></nav>
-
-  <div id="content" aria-live="polite">
-    <h2 style="color:var(--gold);margin-top:0">مرحبا بالعقل المتصل — جلسة العرّاب بدأت.</h2>
-    <p>هذه الصفحة الرئيسية تعمل محليًا. اضغط أحد الأزرار بالأعلى لعرض المحتوى داخل نفس الإطار.</p>
-    <div class="notice" id="emptyNotice">جاري فحص المجلد... يتم إعداد القائمة تلقائيًا.</div>
-  </div>
-
-  <div style="display:flex;gap:12px;justify-content:center;margin-top:18px">
-    <button id="ttsToggle" class="btn">تشغيل/إيقاف الصوت 🔊</button>
-    <button id="reloadList" class="btn">تحديث قائمة الصفحات ↻</button>
-  </div>
-
-  <footer>Arab Network — 777 · WhatsApp: +201002446123</footer>
-</div>
+<h2>👁️‍🗨️ بوابة العرّاب — اختر صفحة</h2>
+<select id="pageSelect">
+  <option selected disabled>تحميل الصفحات...</option>
+</select>
+<iframe id="viewer"></iframe>
 
 <script>
-/*
-  index.html — Sarai-style loader
-  Strategy:
-  - Try a short list of expected filenames (safe approach).
-  - For each candidate, use fetch() to test if it exists (GET) — if 200 OK, add to menu.
-  - When user clicks, fetch the file and inject its <main> or body content into #content.
-  - No history pushState, no file name dump in UI (we show friendly labels).
-  - TTS reader for #content text.
-*/
-
-const candidates = [
-  {file:'home.html', label:'الرئيسية'},
-  {file:'index.html', label:'الصفحة الرئيسية'},
-  {file:'about.html', label:'حول'},
-  {file:'gallery.html', label:'المعرض'},
-  {file:'gallery-index.html', label:'المعرض'},
-  {file:'voice.html', label:'الصوت'},
-  {file:'contact.html', label:'تواصل'},
-  {file:'sky-gate.html', label:'بوابة'},
-  {file:'zero.html', label:'Zero'},
-  {file:'dendera-court.html', label:'Dendera'},
-  // add more friendly mappings if you plan to add files later
-];
-
-const nav = document.getElementById('nav');
-const content = document.getElementById('content');
-const emptyNotice = document.getElementById('emptyNotice');
-let ttsEnabled = false;
-let synth = window.speechSynthesis;
-
-function safeTextFromHTML(html){
-  // strip tags, keep basic whitespace
-  const tmp = document.createElement('div');
-  tmp.innerHTML = html;
-  return tmp.innerText || tmp.textContent || '';
-}
-
-async function exists(url){
+async function loadPages(){
   try{
-    // try HEAD first for speed (some hosts disallow HEAD — fallback to GET)
-    let res = await fetch(url, {method:'HEAD'});
-    if(res.ok) return true;
-    // fallback GET (but don't download huge assets)
-    res = await fetch(url, {method:'GET'});
-    return res.ok;
-  }catch(e){
-    return false;
-  }
-}
-
-async function buildMenu(){
-  nav.innerHTML = '';
-  emptyNotice.innerText = 'جاري فحص المجلد... يتم إعداد القائمة تلقائيًا.';
-  let found = [];
-  // test candidates in parallel but throttle small batch
-  const checks = candidates.map(c => exists(c.file).then(ok=> ok? c : null).catch(()=>null));
-  const results = await Promise.all(checks);
-  for(const r of results){
-    if(r) found.push(r);
-  }
-  // remove duplicates (if index.html & home.html both present show single "الرئيسية")
-  const dedup = [];
-  const labels = new Set();
-  for(const f of found){
-    if(!labels.has(f.label)){
-      labels.add(f.label);
-      dedup.push(f);
-    }
-  }
-
-  if(!dedup.length){
-    emptyNotice.innerText = 'لا توجد صفحات أخرى بعد.';
-    return;
-  } else {
-    emptyNotice.style.display = 'none';
-  }
-
-  dedup.forEach(item=>{
-    const btn = document.createElement('button');
-    btn.className = 'btn';
-    btn.innerText = item.label;
-    btn.addEventListener('click', ()=> loadPage(item.file,item.label));
-    nav.appendChild(btn);
-  });
-
-  // also add a "show raw index" hidden button if you want self-debug (not visible)
-  const debug = document.createElement('button');
-  debug.className='btn menu-hidden';
-  debug.id='debugIndex';
-  nav.appendChild(debug);
-}
-
-// load page and inject
-async function loadPage(file,label){
-  try{
-    content.innerHTML = `<p style="color:var(--muted)">جاري تحميل "${label}" …</p>`;
-    const res = await fetch(file);
-    if(!res.ok) throw new Error('file not found');
+    const res = await fetch('.');
     const html = await res.text();
-    // try to extract only <main> or <article> or body inner
-    const tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    let fragment = '';
-    const main = tmp.querySelector('main');
-    const article = tmp.querySelector('article');
-    if(main) fragment = main.innerHTML;
-    else if(article) fragment = article.innerHTML;
-    else {
-      // remove common head elements if present and take body innerHTML
-      const body = tmp.querySelector('body');
-      fragment = body ? body.innerHTML : tmp.innerHTML;
-    }
-    // optional: sanitize minimal scripts removal
-    fragment = fragment.replace(/<script[\s\S]*?<\/script>/gi, '');
-    // update content
-    content.innerHTML = '<div style="opacity:.96">'+fragment+'</div>';
-    // scroll to top of content
-    content.scrollIntoView({behavior:'smooth'});
-    // if tts is on, speak
-    if(ttsEnabled){
-      const txt = safeTextFromHTML(content.innerHTML);
-      speakText(txt);
-    }
-  }catch(err){
-    content.innerHTML = `<div class="notice" style="color:var(--muted)">تعذر تحميل الصفحة "${label}".<br>تأكد من وجود الملف في الجذر: <strong>${file}</strong></div>`;
+    const files = [...html.matchAll(/href="([^"]+\.html)"/g)]
+                   .map(m=>m[1])
+                   .filter(f=>!f.includes('index.html'));
+    const sel = document.getElementById('pageSelect');
+    files.forEach(f=>{
+      const opt = document.createElement('option');
+      opt.value = f;
+      opt.textContent = f.replace('.html','').replace(/[-_]/g,' ');
+      sel.appendChild(opt);
+    });
+  }catch(e){
+    console.error('⚠️ فشل تحميل القائمة:',e);
   }
 }
 
-/* TTS functions */
-function speakText(text){
-  if(!text || !window.speechSynthesis) return;
-  // cancel previous
-  synth.cancel();
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = 'ar-SA';
-  utter.rate = 0.98;
-  utter.pitch = 1.0;
-  utter.volume = 1.0;
-  synth.speak(utter);
-}
-
-/* Buttons */
-document.getElementById('ttsToggle').addEventListener('click', ()=>{
-  ttsEnabled = !ttsEnabled;
-  document.getElementById('ttsToggle').innerText = ttsEnabled ? 'إيقاف الصوت 🔕' : 'تشغيل الصوت 🔊';
-  if(ttsEnabled){
-    // read initial content
-    const txt = safeTextFromHTML(content.innerHTML);
-    speakText(txt);
-  } else {
-    synth.cancel();
-  }
-});
-document.getElementById('reloadList').addEventListener('click', async ()=>{
-  emptyNotice.style.display = 'block';
-  emptyNotice.innerText = 'إعادة فحص المجلد...';
-  await buildMenu();
+document.getElementById('pageSelect').addEventListener('change',e=>{
+  const viewer=document.getElementById('viewer');
+  viewer.src=e.target.value;
+  viewer.style.display='block';
 });
 
-// initial build on load
-window.addEventListener('load', async ()=>{
-  await buildMenu();
-  // try to load index.html or home.html automatically if present (but not forced)
-  const prefer = ['index.html','home.html','home','index'];
-  for(const p of prefer){
-    const c = candidates.find(it=> it.file === p);
-    if(c){
-      // only load if exists
-      const ok = await exists(c.file);
-      if(ok){
-        loadPage(c.file,c.label);
-        return;
-      }
-    }
-  }
-  // else nothing auto-loaded
-});
+window.onload=loadPages;
 </script>
 </body>
 </html>
