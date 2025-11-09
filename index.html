@@ -1,69 +1,84 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8">
-<title>بوابة العرّاب</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>بوابة العرّاب الفرعونية</title>
 <style>
-  body {
-    background:#000;
-    color:gold;
-    font-family:"Cairo",sans-serif;
-    text-align:center;
-    padding-top:100px;
-  }
-  select {
-    font-size:20px;
-    padding:10px 20px;
-    border:2px solid gold;
-    background:linear-gradient(145deg,#1a1400,#3c3000);
-    color:gold;
-    border-radius:10px;
-    cursor:pointer;
-    box-shadow:0 0 15px rgba(255,215,0,0.3);
-  }
-  iframe {
-    width:90%;
-    height:80vh;
-    margin-top:40px;
-    border:none;
-    display:none;
-  }
+body {
+  margin: 0;
+  background: radial-gradient(circle at center, #000 70%, #111);
+  color: #ffd700;
+  font-family: "Cairo", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+h1 {
+  font-size: 28px;
+  text-shadow: 0 0 15px #ffd700;
+}
+#pages {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+button {
+  background: transparent;
+  border: 1px solid #ffd700;
+  color: #ffd700;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+}
+button:hover {
+  background: #ffd700;
+  color: #000;
+}
 </style>
 </head>
 <body>
-<h2>👁️‍🗨️ بوابة العرّاب — اختر صفحة</h2>
-<select id="pageSelect">
-  <option selected disabled>تحميل الصفحات...</option>
-</select>
-<iframe id="viewer"></iframe>
+  <h1>👑 بوابة العرّاب الفرعونية 👑</h1>
+  <div id="pages">جارٍ تحميل الصفحات...</div>
 
 <script>
-async function loadPages(){
-  try{
+// البحث التلقائي عن الصفحات في نفس الجذر
+const pagesDiv = document.getElementById('pages');
+
+async function loadPages() {
+  try {
     const res = await fetch('.');
     const html = await res.text();
-    const files = [...html.matchAll(/href="([^"]+\.html)"/g)]
-                   .map(m=>m[1])
-                   .filter(f=>!f.includes('index.html'));
-    const sel = document.getElementById('pageSelect');
-    files.forEach(f=>{
-      const opt = document.createElement('option');
-      opt.value = f;
-      opt.textContent = f.replace('.html','').replace(/[-_]/g,' ');
-      sel.appendChild(opt);
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const links = [...doc.querySelectorAll('a[href$=".html"]')]
+      .map(a => a.getAttribute('href'))
+      .filter(name => name !== 'index.html');
+
+    if (links.length === 0) {
+      pagesDiv.textContent = '🚫 لا توجد صفحات أخرى بعد.';
+      return;
+    }
+
+    pagesDiv.innerHTML = '';
+    links.forEach(page => {
+      const btn = document.createElement('button');
+      btn.textContent = page.replace('.html', '');
+      btn.onclick = () => window.location.href = page;
+      pagesDiv.appendChild(btn);
     });
-  }catch(e){
-    console.error('⚠️ فشل تحميل القائمة:',e);
+  } catch (err) {
+    pagesDiv.textContent = '⚠️ خطأ أثناء تحميل الصفحات.';
+    console.error(err);
   }
 }
 
-document.getElementById('pageSelect').addEventListener('change',e=>{
-  const viewer=document.getElementById('viewer');
-  viewer.src=e.target.value;
-  viewer.style.display='block';
-});
-
-window.onload=loadPages;
+loadPages();
 </script>
 </body>
 </html>
