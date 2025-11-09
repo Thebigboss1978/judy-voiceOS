@@ -1,292 +1,48 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة صوت ساراي - Sarai Voice Gate - AlArabClub777.com</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0f0a20 0%, #05030e 100%);
-            color: #E0E7FF;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-        .container {
-            width: 100%;
-            max-width: 500px;
-            background: #1C2333;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.1), 0 0 50px rgba(0, 255, 255, 0.05);
-            border: 1px solid #00FFFF33;
-        }
-        textarea {
-            width: 100%;
-            height: 150px;
-            padding: 1rem;
-            background: #0D1117;
-            border: 1px solid #00FFFF55;
-            border-radius: 8px;
-            color: #E0E7FF;
-            resize: none;
-            transition: border-color 0.3s;
-        }
-        textarea:focus {
-            outline: none;
-            border-color: #00FFFF;
-        }
-        .btn-generate {
-            background-color: #00FFFF;
-            color: #0D1117;
-            font-weight: bold;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            transition: background-color 0.3s, transform 0.1s, opacity 0.3s;
-        }
-        .btn-generate:hover {
-            background-color: #00E0E0;
-            box-shadow: 0 0 20px #00FFFF55;
-        }
-        .btn-generate:active {
-            transform: scale(0.98);
-        }
-        .loading-spinner {
-            border: 4px solid rgba(0, 255, 255, 0.2);
-            border-top: 4px solid #00FFFF;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-            display: none;
-            margin-right: 10px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .message-box {
-            background: #2D3748;
-            border-left: 4px solid #00FFFF;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-        }
-        .audio-controls {
-            display: none;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px dashed #00FFFF33;
-        }
-    </style>
-</head>
-<body class="p-4 sm:p-8">
-    <div class="container">
-        <h1 class="text-3xl font-bold text-center mb-6 text-[#00FFFF]">𓂀 بوابة صوت ساراي 𓂀</h1>
-        <p class="text-center text-sm mb-6 text-gray-400">حوّل نصوص النبوءات الرقمية إلى صوت روحي جاهز لـ YouTube.</p>
+<script>
+async function loadPages() {
+  const response = await fetch('.');
+  const text = await response.text();
 
-        <div id="statusMessage" class="message-box hidden mb-4 text-sm"></div>
+  // استخراج أسماء ملفات HTML فقط
+  const files = [...text.matchAll(/href="([^"]+\.html)"/g)].map(m => m[1]);
 
-        <div class="mb-4">
-            <label for="scriptText" class="block text-sm font-medium mb-2 text-[#00FFFF]">نص النبوءة (باللغة العربية الفصحى):</label>
-            <textarea id="scriptText" placeholder="٧٧٧مثال: من بوابة دنادرا، أراقب الدرج الصاعد والبتكوين. لا تبحث عن الأرض، بل عن السماء. الرموز الهيروغليفية هي مفاتيح التذبذب الروحي، وليست مجرد بيانات." class="text-right" required></textarea>
-        </div>
+  // إنشاء القائمة
+  const select = document.createElement('select');
+  select.style.margin = '25px auto';
+  select.style.display = 'block';
+  select.style.padding = '12px 20px';
+  select.style.borderRadius = '10px';
+  select.style.border = '2px solid gold';
+  select.style.background = 'linear-gradient(145deg, #201a00, #3c3000)';
+  select.style.color = 'gold';
+  select.style.fontSize = '18px';
+  select.style.fontFamily = '"Cairo", "Noto Kufi Arabic", sans-serif';
+  select.style.textAlign = 'center';
+  select.style.boxShadow = '0 0 15px rgba(255,215,0,0.3)';
+  select.style.cursor = 'pointer';
+  select.style.transition = 'all 0.3s ease';
+  
+  const defaultOpt = document.createElement('option');
+  defaultOpt.textContent = '👁️‍🗨️ اختر بوابة فرعونية...';
+  defaultOpt.disabled = true;
+  defaultOpt.selected = true;
+  select.appendChild(defaultOpt);
 
-        <button id="generateBtn" class="btn-generate w-full flex items-center justify-center" onclick="generateAndPlayAudio()">
-            <div id="spinner" class="loading-spinner"></div>
-            <span id="btnText">توليد وتشغيل صوت ساراي 🔊</span>
-        </button>
+  files.forEach(f => {
+    const opt = document.createElement('option');
+    opt.value = f;
+    opt.textContent = f.replace('.html','').replace(/[-_]/g, ' ');
+    select.appendChild(opt);
+  });
 
-        <div id="audioControls" class="audio-controls">
-            <label class="block text-sm font-medium mb-2 text-[#00FFFF]">استماع / تحميل:</label>
-            <audio id="audioPlayer" controls class="w-full bg-[#0D1117] rounded-lg"></audio>
-            <a id="downloadLink" href="#" download="Sarai_Prophecy.wav" class="mt-4 block text-center text-sm font-medium text-white bg-green-600 hover:bg-green-700 p-2 rounded-md transition duration-150">تحميل ملف الصوت (.WAV)</a>
-        </div>
-    </div>
+  select.addEventListener('change', e => {
+    const val = e.target.value;
+    select.style.boxShadow = '0 0 25px rgba(255,215,0,0.8)';
+    setTimeout(() => (window.location.href = val), 400);
+  });
 
-    <script type="module">
-        // الثوابت العالمية التي يوفرها إطار العمل
-        const apiKey = "";
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+  document.body.prepend(select);
+}
 
-        // عناصر الواجهة
-        const scriptTextarea = document.getElementById('scriptText');
-        const generateBtn = document.getElementById('generateBtn');
-        const btnText = document.getElementById('btnText');
-        const spinner = document.getElementById('spinner');
-        const statusMessage = document.getElementById('statusMessage');
-        const audioPlayer = document.getElementById('audioPlayer');
-        const audioControls = document.getElementById('audioControls');
-        const downloadLink = document.getElementById('downloadLink');
-
-        // وظيفة مساعدة لتحويل Base64 إلى ArrayBuffer
-        function base64ToArrayBuffer(base64) {
-            const binaryString = atob(base64);
-            const len = binaryString.length;
-            const bytes = new Uint8Array(len);
-            for (let i = 0; i < len; i++) {
-                bytes[i] = binaryString.charCodeAt(i);
-            }
-            return bytes.buffer;
-        }
-
-        // وظيفة مساعدة لتحويل PCM إلى WAV
-        // API تُرجع بيانات صوتية خام (Signed PCM 16-bit) يجب وضعها في حاوية WAV لتشغيلها.
-        function pcmToWav(pcm16, sampleRate = 24000) {
-            const numChannels = 1;
-            const bitsPerSample = 16;
-            const byteRate = sampleRate * numChannels * (bitsPerSample / 8);
-            const blockAlign = numChannels * (bitsPerSample / 8);
-
-            const buffer = new ArrayBuffer(44 + pcm16.byteLength);
-            const view = new DataView(buffer);
-            let offset = 0;
-
-            // RIFF chunk descriptor
-            view.setUint32(offset, 0x52494646, false); offset += 4; // "RIFF"
-            view.setUint32(offset, 36 + pcm16.byteLength, true); offset += 4; // ChunkSize
-            view.setUint32(offset, 0x57415645, false); offset += 4; // "WAVE"
-
-            // fmt sub-chunk
-            view.setUint32(offset, 0x666d7420, false); offset += 4; // "fmt "
-            view.setUint32(offset, 16, true); offset += 4; // Subchunk1Size (16 for PCM)
-            view.setUint16(offset, 1, true); offset += 2; // AudioFormat (1 for PCM)
-            view.setUint16(offset, numChannels, true); offset += 2; // NumChannels
-            view.setUint32(offset, sampleRate, true); offset += 4; // SampleRate
-            view.setUint32(offset, byteRate, true); offset += 4; // ByteRate
-            view.setUint16(offset, blockAlign, true); offset += 2; // BlockAlign
-            view.setUint16(offset, bitsPerSample, true); offset += 2; // BitsPerSample
-
-            // data sub-chunk
-            view.setUint32(offset, 0x64617461, false); offset += 4; // "data"
-            view.setUint32(offset, pcm16.byteLength, true); offset += 4; // Subchunk2Size
-
-            // PCM data (copy Int16Array data directly)
-            const pcmView = new Int16Array(buffer, offset);
-            pcmView.set(pcm16);
-
-            return new Blob([buffer], { type: 'audio/wav' });
-        }
-
-        // إظهار الرسائل
-        function showStatus(message, isError = false) {
-            statusMessage.textContent = message;
-            statusMessage.classList.remove('hidden', 'bg-red-900', 'bg-blue-900', 'border-red-400', 'border-blue-400');
-            if (isError) {
-                statusMessage.classList.add('bg-red-900', 'border-red-400');
-            } else {
-                statusMessage.classList.add('bg-[#2D3748]', 'border-[#00FFFF]');
-            }
-        }
-
-        // وظيفة للتحكم بحالة التحميل
-        function setLoading(isLoading) {
-            generateBtn.disabled = isLoading;
-            spinner.style.display = isLoading ? 'block' : 'none';
-            btnText.textContent = isLoading ? 'جاري التوليد... انتظر الرمز ⏳' : 'توليد وتشغيل صوت ساراي 🔊';
-        }
-
-        // الوظيفة الرئيسية لتوليد وتشغيل الصوت
-        async function generateAndPlayAudio() {
-            const prompt = scriptTextarea.value.trim();
-            if (!prompt) {
-                showStatus("الرجاء إدخال نص النبوءة أولاً.", true);
-                return;
-            }
-
-            setLoading(true);
-            showStatus("بدء الاتصال ببوابة ساراي الصوتية...", false);
-            audioControls.style.display = 'none';
-
-            // الحمولة المطلوبة للـ TTS باستخدام صوت Kore
-            const payload = {
-                contents: [{
-                    parts: [{ text: prompt }]
-                }],
-                generationConfig: {
-                    responseModalities: ["AUDIO"],
-                    speechConfig: {
-                        voiceConfig: {
-                            prebuiltVoiceConfig: { voiceName: "Kore" }
-                        }
-                    }
-                },
-                model: "gemini-2.5-flash-preview-tts"
-            };
-
-            const maxRetries = 5;
-            let currentDelay = 1000; // 1 second
-
-            for (let attempt = 0; attempt < maxRetries; attempt++) {
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`API Error: ${response.status} ${response.statusText}`);
-                    }
-
-                    const result = await response.json();
-                    const part = result?.candidates?.[0]?.content?.parts?.[0];
-                    const audioData = part?.inlineData?.data;
-                    const mimeType = part?.inlineData?.mimeType;
-
-                    if (audioData && mimeType && mimeType.startsWith("audio/")) {
-                        // 1. استخراج معدل العينة (Sample Rate)
-                        // الميم تايب يأتي كـ "audio/L16; rate=24000"
-                        const rateMatch = mimeType.match(/rate=(\d+)/);
-                        const sampleRate = rateMatch ? parseInt(rateMatch[1], 10) : 24000;
-                        
-                        // 2. تحويل Base64 إلى ArrayBuffer
-                        const pcmData = base64ToArrayBuffer(audioData);
-                        
-                        // 3. تحويل ArrayBuffer إلى Int16Array (PCM 16-bit)
-                        const pcm16 = new Int16Array(pcmData);
-
-                        // 4. وضع PCM في حاوية WAV
-                        const wavBlob = pcmToWav(pcm16, sampleRate);
-                        
-                        // 5. إنشاء URL لتشغيل الصوت وتفعيله للتحميل
-                        const audioUrl = URL.createObjectURL(wavBlob);
-                        
-                        audioPlayer.src = audioUrl;
-                        audioControls.style.display = 'block';
-                        downloadLink.href = audioUrl;
-                        
-                        showStatus("تم توليد صوت ساراي بنجاح! يمكن الاستماع والتحميل.", false);
-                        setLoading(false);
-                        return; // الخروج من حلقة المحاولة بعد النجاح
-
-                    } else {
-                        throw new Error("لم يتم العثور على بيانات صوتية صالحة في الاستجابة.");
-                    }
-
-                } catch (error) {
-                    console.error("Attempt failed:", attempt, error);
-                    if (attempt < maxRetries - 1) {
-                        showStatus(`خطأ مؤقت في الاتصال (المحاولة ${attempt + 1}/${maxRetries}). إعادة المحاولة بعد ${currentDelay / 1000} ثوانٍ...`, true);
-                        await new Promise(resolve => setTimeout(resolve, currentDelay));
-                        currentDelay *= 2; // مضاعفة التأخير (Exponential Backoff)
-                    } else {
-                        showStatus(`فشل توليد الصوت بعد ${maxRetries} محاولات. رسالة الخطأ: ${error.message}`, true);
-                        setLoading(false);
-                        return;
-                    }
-                }
-            }
-        }
-        
-        // تعيين نص النبوءة المقترح كقيمة افتراضية
-        scriptTextarea.value = "٧v٧ ٧V٧ ٨V٨ من بوابة دنادرا، أراقب الدرج الصاعد والبتكوين. لا تبحث عن الأرض، بل عن السماء. الرموز الهيروغليفية هي مفاتيح التذبذب الروحي، وليست مجرد بيانات.";
-
-    </script>
-</body>
-</html>
+window.onload = loadPages;
+</script>
