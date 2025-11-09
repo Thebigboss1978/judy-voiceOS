@@ -1,56 +1,129 @@
-<script>
-async function loadPages() {
-  try {
-    // الحصول على ملفات HTML داخل نفس المجلد من GitHub أو Vercel أو Localhost
-    const response = await fetch(window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/'));
-    const text = await response.text();
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>بوابة العرّاب 777 | AlArab Interactive Agent</title>
 
-    // استخراج أسماء ملفات HTML فقط
-    const files = [...text.matchAll(/href="([^"]+\.html)"/g)].map(m => m[1]);
-    if (!files.length) return;
+  <style>
+    body {
+      background: radial-gradient(circle at center, #000 60%, #021212);
+      color: #00ffcc;
+      font-family: "Cairo", sans-serif;
+      text-align: center;
+      padding: 50px;
+      line-height: 1.8;
+      overflow-x: hidden;
+    }
 
-    // إنشاء القائمة
-    const select = document.createElement('select');
-    Object.assign(select.style, {
-      margin: '25px auto',
-      display: 'block',
-      padding: '12px 20px',
-      borderRadius: '10px',
-      border: '2px solid gold',
-      background: 'linear-gradient(145deg, #1a1400, #3b2f00)',
-      color: 'gold',
-      fontSize: '18px',
-      fontFamily: '"Cairo", "Noto Kufi Arabic", sans-serif',
-      textAlign: 'center',
-      boxShadow: '0 0 15px rgba(255,215,0,0.3)',
-      cursor: 'pointer',
-      transition: 'all 0.3s ease'
-    });
+    select {
+      margin: 20px;
+      padding: 12px 20px;
+      font-size: 18px;
+      background: #0a0a0a;
+      color: #00ffe0;
+      border: 1px solid #00ffe0;
+      border-radius: 10px;
+      cursor: pointer;
+      outline: none;
+    }
 
-    const defaultOpt = document.createElement('option');
-    defaultOpt.textContent = '👁️‍🗨️ اختر بوابة فرعونية...';
-    defaultOpt.disabled = true;
-    defaultOpt.selected = true;
-    select.appendChild(defaultOpt);
+    select:hover { background: #002020; }
 
-    files.forEach(f => {
-      const opt = document.createElement('option');
-      opt.value = f;
-      opt.textContent = f.replace('.html','').replace(/[-_]/g, ' ');
-      select.appendChild(opt);
-    });
+    button {
+      margin-top: 30px;
+      background: #00ffcc;
+      border: none;
+      color: #000;
+      font-size: 20px;
+      padding: 10px 30px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
 
-    select.addEventListener('change', e => {
-      const val = e.target.value;
-      select.style.boxShadow = '0 0 25px rgba(255,215,0,0.8)';
-      setTimeout(() => (window.location.href = val), 400);
-    });
+    button:hover { background: #00ffe6; transform: scale(1.05); }
 
-    document.body.prepend(select);
-  } catch (err) {
-    console.error('⚠️ فشل تحميل القائمة:', err);
-  }
-}
+    #textDisplay {
+      margin-top: 40px;
+      font-size: 22px;
+      color: #bfffff;
+      padding: 15px;
+      border: 1px dashed #00ffcc;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.5);
+      width: 80%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
 
-window.onload = loadPages;
-</script>
+  <h1>👑 بوابة العرّاب 777</h1>
+  <p>اختر صفحة أو تفاعل مع النظام الصوتي مباشرة</p>
+
+  <select id="pageSelect">
+    <option disabled selected>📄 اختر صفحة...</option>
+  </select>
+
+  <button id="speakBtn">🔊 تشغيل الصوت</button>
+
+  <div id="textDisplay">مرحباً بالعقل المتصل — جلسة العرّاب بدأت.</div>
+
+  <script>
+    // 🧠 جلسة ثابتة
+    if (!localStorage.getItem('arab_session_key')) {
+      const key = 'session_' + Date.now();
+      localStorage.setItem('arab_session_key', key);
+      console.log('🔹 جلسة جديدة:', key);
+    } else {
+      console.log('🔸 جلسة مستمرة:', localStorage.getItem('arab_session_key'));
+    }
+
+    // 📁 تحميل الصفحات تلقائياً من نفس المجلد
+    async function loadPages() {
+      const response = await fetch('.');
+      const text = await response.text();
+      const files = [...text.matchAll(/href="([^"]+\.html)"/g)].map(m => m[1]);
+      const select = document.getElementById("pageSelect");
+
+      files.forEach(f => {
+        const opt = document.createElement("option");
+        opt.value = f;
+        opt.textContent = f.replace(".html", "");
+        select.appendChild(opt);
+      });
+
+      select.addEventListener("change", e => {
+        window.location.href = e.target.value;
+      });
+    }
+    loadPages();
+
+    // 🔊 نظام النطق الصوتي
+    let speaking = false;
+    const synth = window.speechSynthesis;
+    function speak(text) {
+      if (speaking) synth.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'ar-SA';
+      utter.rate = 1;
+      synth.speak(utter);
+      speaking = true;
+    }
+
+    document.getElementById('speakBtn').onclick = () => {
+      const text = document.getElementById('textDisplay').innerText;
+      speak(text);
+    };
+
+    // ✨ تأثير بداية الجلسة
+    window.onload = () => {
+      speak("أهلاً وسهلاً بالعرّاب الكبير، الجلسة الآن بدأت.");
+      console.log("🎯 النظام متصل وجاهز.");
+    };
+  </script>
+
+</body>
+</html>
