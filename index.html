@@ -1,47 +1,55 @@
 <script>
 async function loadPages() {
-  const response = await fetch('.');
-  const text = await response.text();
+  try {
+    // الحصول على ملفات HTML داخل نفس المجلد من GitHub أو Vercel أو Localhost
+    const response = await fetch(window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/'));
+    const text = await response.text();
 
-  // استخراج أسماء ملفات HTML فقط
-  const files = [...text.matchAll(/href="([^"]+\.html)"/g)].map(m => m[1]);
+    // استخراج أسماء ملفات HTML فقط
+    const files = [...text.matchAll(/href="([^"]+\.html)"/g)].map(m => m[1]);
+    if (!files.length) return;
 
-  // إنشاء القائمة
-  const select = document.createElement('select');
-  select.style.margin = '25px auto';
-  select.style.display = 'block';
-  select.style.padding = '12px 20px';
-  select.style.borderRadius = '10px';
-  select.style.border = '2px solid gold';
-  select.style.background = 'linear-gradient(145deg, #201a00, #3c3000)';
-  select.style.color = 'gold';
-  select.style.fontSize = '18px';
-  select.style.fontFamily = '"Cairo", "Noto Kufi Arabic", sans-serif';
-  select.style.textAlign = 'center';
-  select.style.boxShadow = '0 0 15px rgba(255,215,0,0.3)';
-  select.style.cursor = 'pointer';
-  select.style.transition = 'all 0.3s ease';
-  
-  const defaultOpt = document.createElement('option');
-  defaultOpt.textContent = '👁️‍🗨️ اختر بوابة فرعونية...';
-  defaultOpt.disabled = true;
-  defaultOpt.selected = true;
-  select.appendChild(defaultOpt);
+    // إنشاء القائمة
+    const select = document.createElement('select');
+    Object.assign(select.style, {
+      margin: '25px auto',
+      display: 'block',
+      padding: '12px 20px',
+      borderRadius: '10px',
+      border: '2px solid gold',
+      background: 'linear-gradient(145deg, #1a1400, #3b2f00)',
+      color: 'gold',
+      fontSize: '18px',
+      fontFamily: '"Cairo", "Noto Kufi Arabic", sans-serif',
+      textAlign: 'center',
+      boxShadow: '0 0 15px rgba(255,215,0,0.3)',
+      cursor: 'pointer',
+      transition: 'all 0.3s ease'
+    });
 
-  files.forEach(f => {
-    const opt = document.createElement('option');
-    opt.value = f;
-    opt.textContent = f.replace('.html','').replace(/[-_]/g, ' ');
-    select.appendChild(opt);
-  });
+    const defaultOpt = document.createElement('option');
+    defaultOpt.textContent = '👁️‍🗨️ اختر بوابة فرعونية...';
+    defaultOpt.disabled = true;
+    defaultOpt.selected = true;
+    select.appendChild(defaultOpt);
 
-  select.addEventListener('change', e => {
-    const val = e.target.value;
-    select.style.boxShadow = '0 0 25px rgba(255,215,0,0.8)';
-    setTimeout(() => (window.location.href = val), 400);
-  });
+    files.forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f;
+      opt.textContent = f.replace('.html','').replace(/[-_]/g, ' ');
+      select.appendChild(opt);
+    });
 
-  document.body.prepend(select);
+    select.addEventListener('change', e => {
+      const val = e.target.value;
+      select.style.boxShadow = '0 0 25px rgba(255,215,0,0.8)';
+      setTimeout(() => (window.location.href = val), 400);
+    });
+
+    document.body.prepend(select);
+  } catch (err) {
+    console.error('⚠️ فشل تحميل القائمة:', err);
+  }
 }
 
 window.onload = loadPages;
