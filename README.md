@@ -17,6 +17,30 @@ View your app in AI Studio: https://ai.studio/apps/drive/1JauLKdMTa823iO8fNsvQEs
 3. Run the app: `npm run dev`
 4. Open: `http://localhost:3000`
 
+## Work locally first (recommended before any deploy)
+
+Use this checklist to make sure you are seeing the **latest agreed design** locally:
+
+1. Stop any running dev servers in old terminals.
+2. In this repo folder, run:
+   - `git pull`
+   - `npm install`
+   - `npm run dev -- --host 0.0.0.0 --port 3000`
+3. Open only: `http://localhost:3000`
+4. Hard refresh in browser:
+   - Mac: `Cmd + Shift + R`
+   - Windows/Linux: `Ctrl + F5`
+5. If you still see old UI, clear site data for `localhost:3000` and reopen the page.
+
+### Quick local verification
+
+The current agreed minimal interface should show only:
+- six reactive sticks
+- one reactive dot
+- dark full-screen background
+
+If you still see chat panels / side logs / old orbit UI, you are likely opening an old server instance or cached build.
+
 ## Deploy (Vercel)
 
 1. Import this repository in Vercel
