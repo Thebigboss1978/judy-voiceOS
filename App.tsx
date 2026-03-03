@@ -100,44 +100,58 @@ const App: React.FC = () => {
     }
   };
 
-  const ringScale = 1 + (status === 'LIVE' ? volume / 280 : 0);
+  const orbSize = 240 + (status === 'LIVE' ? volume * 1.1 : 0);
 
   return (
-    <div className="h-screen w-full bg-[#020305] text-[#e2b714] flex items-center justify-center p-6">
-      <div className="relative w-full max-w-4xl rounded-3xl border border-[#e2b714]/20 bg-black/70 shadow-[0_0_60px_rgba(226,183,20,0.08)] overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_50%_30%,rgba(226,183,20,0.10),transparent_45%)]" />
+    <div className="min-h-screen w-full bg-black text-[#b58aff]">
+      <header className="h-20 border-b border-white/10 px-6 md:px-10 flex items-center justify-between">
+        <div>
+          <h1 className="text-xl md:text-2xl font-bold tracking-[0.2em] uppercase text-white">MALIKA-NASHMI OS</h1>
+          <p className="text-[10px] tracking-[0.35em] uppercase text-white/40">Managed by Master Said | Judy.777</p>
+        </div>
+        <div className="rounded-full border border-[#7a40ff]/50 bg-[#12091f] px-3 py-2 text-xs tracking-widest uppercase text-[#c78dff]">
+          JUDY · Unified
+        </div>
+      </header>
 
-        <div className="relative z-10 p-8 md:p-12 flex flex-col items-center gap-8">
-          <div className="text-center space-y-2">
-            <p className="text-[11px] tracking-[0.8em] uppercase text-[#e2b714]/60">AlArab Club 777</p>
-            <h1 className="text-2xl md:text-4xl font-bold tracking-wider">SEVEN • Unified Persona</h1>
-            <p className="text-sm text-[#e2b714]/70">شخصية واحدة فعّالة بدل ٣ شخصيات</p>
+      <main className="grid grid-cols-1 xl:grid-cols-[1fr_360px] min-h-[calc(100vh-80px)]">
+        <section className="relative p-8 md:p-12 flex flex-col items-center justify-center gap-8">
+          <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_50%_50%,rgba(181,138,255,0.12),transparent_55%)]" />
+
+          <div
+            className="relative rounded-full border border-[#ff3b3b]/30 bg-[radial-gradient(circle,rgba(255,71,87,0.85),rgba(255,30,30,0.25)_55%,transparent_75%)] shadow-[0_0_80px_rgba(255,45,45,0.6)] transition-all duration-200"
+            style={{ width: `${orbSize}px`, height: `${orbSize}px` }}
+          >
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className={`w-4 h-4 rounded-full ${status === 'LIVE' ? 'bg-[#39ff14]' : status === 'CONNECTING' ? 'bg-[#ffe08a]' : 'bg-black/40'}`} />
+            </div>
           </div>
 
           <button
             onClick={startSeven}
-            className="group relative w-72 h-72 md:w-80 md:h-80 rounded-full border border-[#e2b714]/40 flex items-center justify-center disabled:cursor-not-allowed"
             disabled={status !== 'IDLE'}
+            className="relative z-10 w-full max-w-xl rounded-3xl border border-[#a343ff] bg-black/60 py-6 text-center text-lg md:text-2xl font-semibold tracking-[0.35em] uppercase text-[#b54dff] transition hover:bg-[#180d2a] disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            <div
-              className="absolute inset-6 rounded-full border border-[#e2b714]/30 transition-transform duration-200"
-              style={{ transform: `scale(${ringScale})` }}
-            />
-            <div className={`absolute inset-0 rounded-full blur-2xl transition-opacity ${status === 'LIVE' ? 'opacity-90' : 'opacity-30'}`} style={{ background: 'radial-gradient(circle, rgba(226,183,20,0.28), transparent 65%)' }} />
-            <div className="relative text-center px-6">
-              <div className={`mx-auto mb-4 w-3 h-3 rounded-full ${status === 'LIVE' ? (isAiSpeaking ? 'bg-[#39ff14] shadow-[0_0_18px_#39ff14]' : 'bg-[#e2b714] animate-pulse') : status === 'CONNECTING' ? 'bg-[#f5d76e] animate-pulse' : 'bg-white/20'}`} />
-              <div className="text-lg md:text-xl font-semibold tracking-[0.2em] uppercase">Seven</div>
-              <div className="text-xs mt-2 tracking-[0.35em] uppercase text-[#e2b714]/60">Tap to invoke</div>
-            </div>
+            Initialize Sovereign Link
           </button>
 
-          <div className="w-full max-w-xl grid grid-cols-1 md:grid-cols-3 gap-4 text-xs uppercase tracking-widest text-center">
-            <div className="rounded-xl border border-[#e2b714]/20 p-4 bg-[#0a0a0a]/70">State: {status}</div>
-            <div className="rounded-xl border border-[#e2b714]/20 p-4 bg-[#0a0a0a]/70">Voice: {isAiSpeaking ? 'Responding' : 'Listening'}</div>
-            <div className="rounded-xl border border-[#e2b714]/20 p-4 bg-[#0a0a0a]/70">Signal: {Math.round(volume)}</div>
+          <div className="w-full max-w-xl grid grid-cols-1 md:grid-cols-3 gap-3 text-center text-xs uppercase tracking-[0.2em]">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-white/70">System: {status}</div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-white/70">Voice: {isAiSpeaking ? 'Responding' : 'Listening'}</div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-white/70">Signal: {Math.round(volume)}</div>
           </div>
-        </div>
-      </div>
+        </section>
+
+        <aside className="border-l border-white/10 p-8">
+          <h2 className="text-xs tracking-[0.35em] uppercase text-white/50 mb-6">Security Logs</h2>
+          <div className="space-y-3 text-xs text-white/50">
+            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">Node: ALARAB_CORE_777</div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">Persona: JUDY (Unified)</div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">Auth: MASTER_AUTHORIZED</div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">Mode: AUDIO_REALTIME</div>
+          </div>
+        </aside>
+      </main>
     </div>
   );
 };
