@@ -3,7 +3,13 @@ import { GoogleGenAI, Modality } from "@google/genai";
 
 export class MasterAgentService {
   async connectLive(callbacks: any) {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY || process.env.API_KEY;
+
+    if (!apiKey) {
+      throw new Error('Missing Gemini API key. Set VITE_GEMINI_API_KEY (or GEMINI_API_KEY) in your environment.');
+    }
+
+    const ai = new GoogleGenAI({ apiKey });
     
     const systemInstruction = `
 🔱 IDENTITY: SEVEN (The 777 Soul).
