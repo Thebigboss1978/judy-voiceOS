@@ -14,10 +14,10 @@ View your app in AI Studio: https://ai.studio/apps/drive/1JauLKdMTa823iO8fNsvQEs
 
 1. Install dependencies: `npm install`
 2. Set your Gemini API key in `.env.local` using either `VITE_GEMINI_API_KEY` (preferred) or `GEMINI_API_KEY`
-3. Run the app: `npm run dev`
-4. Open: `http://localhost:3000`
+3. Run the app (recommended ZERO port): `npm run dev -- --host 0.0.0.0 --port 7788`
+4. Open: `http://localhost:7788`
 
-## Work locally first (recommended before any deploy)
+## Work on ZERO locally first (recommended before any deploy)
 
 Use this checklist to make sure you are seeing the **latest agreed design** locally:
 
@@ -25,12 +25,12 @@ Use this checklist to make sure you are seeing the **latest agreed design** loca
 2. In this repo folder, run:
    - `git pull`
    - `npm install`
-   - `npm run dev -- --host 0.0.0.0 --port 3000`
-3. Open only: `http://localhost:3000`
+   - `npm run dev -- --host 0.0.0.0 --port 7788`
+3. Open only: `http://localhost:7788`
 4. Hard refresh in browser:
    - Mac: `Cmd + Shift + R`
    - Windows/Linux: `Ctrl + F5`
-5. If you still see old UI, clear site data for `localhost:3000` and reopen the page.
+5. If you still see old UI, clear site data for `localhost:7788` and reopen the page.
 
 ### Quick local verification
 
