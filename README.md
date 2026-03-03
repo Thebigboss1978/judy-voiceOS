@@ -56,6 +56,19 @@ The current agreed minimal interface should show only:
 
 If you still see chat panels / side logs / old orbit UI, you are likely opening an old server instance or cached build.
 
+## Move to your new GitHub repo (`Malika`)
+
+If you created a brand-new repository (`https://github.com/Thebigboss1978/Malika.git`), point this local project to it:
+
+```bash
+git remote remove origin
+git remote add origin https://github.com/Thebigboss1978/Malika.git
+git branch -M main
+git push -u origin main
+```
+
+Then connect **Malika** (not the old repo) in Vercel and deploy from that repo.
+
 ## Deploy (Vercel)
 
 1. Import this repository in Vercel
@@ -63,8 +76,7 @@ If you still see chat panels / side logs / old orbit UI, you are likely opening 
    - `VITE_GEMINI_API_KEY` (preferred)
 3. Deploy
 
-The production domain should look like:
-- `https://judy-voice-os.vercel.app`
+The production domain will be the one Vercel assigns to the connected project (for example `https://<project-name>.vercel.app`).
 
 ### Troubleshooting `404: DEPLOYMENT_NOT_FOUND`
 
@@ -72,4 +84,4 @@ That error is usually caused by an old/invalid preview URL rather than an app co
 
 - Open the latest deployment from the Vercel dashboard and use that new URL.
 - If needed, trigger a fresh deployment (for example: push a commit or click **Redeploy**).
-- Use the stable production domain (`https://judy-voice-os.vercel.app`) instead of old preview links.
+- Use the **current** production domain shown in your Vercel dashboard for the active project (Malika), not an old domain from a different/deleted project.
