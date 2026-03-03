@@ -14,10 +14,25 @@ View your app in AI Studio: https://ai.studio/apps/drive/1JauLKdMTa823iO8fNsvQEs
 
 1. Install dependencies: `npm install`
 2. Set your Gemini API key in `.env.local` using either `VITE_GEMINI_API_KEY` (preferred) or `GEMINI_API_KEY`
-3. Run the app (recommended ZERO port): `npm run dev -- --host 0.0.0.0 --port 7788`
+3. Run the app (recommended ZERO port): `npm run dev:zero`
 4. Open: `http://localhost:7788`
 
 ## Work on ZERO locally first (recommended before any deploy)
+
+### Start from a brand-new folder (recommended)
+
+If you still see old UI, do not reuse the old project copy. Create a fresh local folder:
+
+```bash
+cd /Users/macos/AlArab777
+rm -rf Malika_Only_ZERO
+git clone https://github.com/Thebigboss1978/judy-voiceOS.git Malika_Only_ZERO
+cd Malika_Only_ZERO
+npm install
+npm run dev:zero
+```
+
+Then open: `http://localhost:7788`
 
 Use this checklist to make sure you are seeing the **latest agreed design** locally:
 
@@ -25,7 +40,7 @@ Use this checklist to make sure you are seeing the **latest agreed design** loca
 2. In this repo folder, run:
    - `git pull`
    - `npm install`
-   - `npm run dev -- --host 0.0.0.0 --port 7788`
+   - `npm run dev:zero`
 3. Open only: `http://localhost:7788`
 4. Hard refresh in browser:
    - Mac: `Cmd + Shift + R`
