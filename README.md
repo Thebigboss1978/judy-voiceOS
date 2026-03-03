@@ -10,11 +10,27 @@ View your app in AI Studio: https://ai.studio/apps/drive/1JauLKdMTa823iO8fNsvQEs
 
 ## Run Locally
 
-**Prerequisites:**  Node.js
+**Prerequisites:** Node.js
 
+1. Install dependencies: `npm install`
+2. Set your Gemini API key in `.env.local` using either `VITE_GEMINI_API_KEY` (preferred) or `GEMINI_API_KEY`
+3. Run the app: `npm run dev`
+4. Open: `http://localhost:3000`
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Deploy (Vercel)
+
+1. Import this repository in Vercel
+2. Add an environment variable in Vercel project settings:
+   - `VITE_GEMINI_API_KEY` (preferred)
+3. Deploy
+
+The production domain should look like:
+- `https://judy-voice-os.vercel.app`
+
+### Troubleshooting `404: DEPLOYMENT_NOT_FOUND`
+
+That error is usually caused by an old/invalid preview URL rather than an app code problem.
+
+- Open the latest deployment from the Vercel dashboard and use that new URL.
+- If needed, trigger a fresh deployment (for example: push a commit or click **Redeploy**).
+- Use the stable production domain (`https://judy-voice-os.vercel.app`) instead of old preview links.
