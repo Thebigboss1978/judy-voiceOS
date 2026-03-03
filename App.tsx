@@ -1,12 +1,11 @@
-
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { agentService, decode, decodeAudioData, encode } from './services/geminiService';
 
 const App: React.FC = () => {
   const [status, setStatus] = useState<'IDLE' | 'CONNECTING' | 'LIVE'>('IDLE');
   const [volume, setVolume] = useState(0);
   const [isAiSpeaking, setIsAiSpeaking] = useState(false);
-  
+
   const outputAudioCtxRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const nextStartTimeRef = useRef<number>(0);
@@ -15,13 +14,13 @@ const App: React.FC = () => {
   const startSeven = async () => {
     if (status !== 'IDLE') return;
     setStatus('CONNECTING');
-    
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const inputCtx = new AudioContext({ sampleRate: 16000 });
       const outputCtx = new AudioContext({ sampleRate: 24000 });
       outputAudioCtxRef.current = outputCtx;
-      
+
       const outAnal = outputCtx.createAnalyser();
       analyserRef.current = outAnal;
 
@@ -35,11 +34,11 @@ const App: React.FC = () => {
             source.buffer = buf;
             source.connect(analyserRef.current!);
             source.connect(outputAudioCtxRef.current.destination);
-            
+
             const start = Math.max(nextStartTimeRef.current, outputAudioCtxRef.current.currentTime);
             source.start(start);
             nextStartTimeRef.current = start + buf.duration;
-            
+
             setIsAiSpeaking(true);
             source.onended = () => {
               if (outputAudioCtxRef.current && outputAudioCtxRef.current.currentTime >= nextStartTimeRef.current) {
@@ -61,24 +60,24 @@ const App: React.FC = () => {
       });
 
       sessionPromiseRef.current = sessionPromise;
-      
+
       const processor = inputCtx.createScriptProcessor(4096, 1, 1);
       const source = inputCtx.createMediaStreamSource(stream);
       source.connect(processor);
       processor.connect(inputCtx.destination);
-      
+
       processor.onaudioprocess = (e) => {
         const currentSessionPromise = sessionPromiseRef.current;
         if (currentSessionPromise) {
           const data = e.inputBuffer.getChannelData(0);
           const int16 = new Int16Array(data.length);
           for (let i = 0; i < data.length; i++) int16[i] = data[i] * 32768;
-          
+
           currentSessionPromise.then((session) => {
             session.sendRealtimeInput({
-              media: { 
-                data: encode(new Uint8Array(int16.buffer)), 
-                mimeType: 'audio/pcm;rate=16000' 
+              media: {
+                data: encode(new Uint8Array(int16.buffer)),
+                mimeType: 'audio/pcm;rate=16000'
               }
             });
           });
@@ -101,60 +100,43 @@ const App: React.FC = () => {
     }
   };
 
+  const ringScale = 1 + (status === 'LIVE' ? volume / 280 : 0);
+
   return (
-    <div className="h-screen w-full bg-black flex flex-col items-center justify-center relative overflow-hidden">
-      {/* Decorative Elements */}
-      <div className="absolute top-10 flex flex-col items-center">
-        <div className="text-[10px] tracking-[1.2em] text-[#e2b714] opacity-80 uppercase mb-2">AlArab_Club_777</div>
-        <div className="w-48 h-[1px] bg-gradient-to-r from-transparent via-[#e2b714]/50 to-transparent"></div>
-      </div>
-      
-      {/* Interaction Core - Pyramids */}
-      <div className="flex gap-12 items-end h-64 z-10">
-        {[...Array(3)].map((_, i) => (
-          <div key={i} onClick={startSeven} className="cursor-pointer group relative">
-            {/* Status Indicator Orb */}
-            <div className={`w-1.5 h-1.5 rounded-full mb-12 mx-auto transition-all duration-700 ${
-              status === 'LIVE' ? (isAiSpeaking ? 'bg-[#39ff14] shadow-[0_0_15px_#39ff14]' : 'bg-[#e2b714] animate-pulse') : 'bg-white/10'
-            }`} />
-            
-            {/* Pyramid Steps */}
-            <div className="flex flex-col-reverse gap-1.5">
-              {[...Array(7)].map((_, j) => (
-                <div 
-                  key={j} 
-                  className="bg-[#e2b714] transition-all duration-300 rounded-sm"
-                  style={{ 
-                    width: `${24 + (j*22)}px`, 
-                    height: '2.5px', 
-                    opacity: status === 'IDLE' ? 0.05 : 1 - (j*0.12),
-                    boxShadow: status === 'LIVE' ? `0 0 ${volume/5}px rgba(226,183,20,0.6)` : 'none',
-                    transform: `scaleX(${1 + (status === 'LIVE' ? volume/60 : 0)})`
-                  }}
-                />
-              ))}
+    <div className="h-screen w-full bg-[#020305] text-[#e2b714] flex items-center justify-center p-6">
+      <div className="relative w-full max-w-4xl rounded-3xl border border-[#e2b714]/20 bg-black/70 shadow-[0_0_60px_rgba(226,183,20,0.08)] overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_50%_30%,rgba(226,183,20,0.10),transparent_45%)]" />
+
+        <div className="relative z-10 p-8 md:p-12 flex flex-col items-center gap-8">
+          <div className="text-center space-y-2">
+            <p className="text-[11px] tracking-[0.8em] uppercase text-[#e2b714]/60">AlArab Club 777</p>
+            <h1 className="text-2xl md:text-4xl font-bold tracking-wider">SEVEN • Unified Persona</h1>
+            <p className="text-sm text-[#e2b714]/70">شخصية واحدة فعّالة بدل ٣ شخصيات</p>
+          </div>
+
+          <button
+            onClick={startSeven}
+            className="group relative w-72 h-72 md:w-80 md:h-80 rounded-full border border-[#e2b714]/40 flex items-center justify-center disabled:cursor-not-allowed"
+            disabled={status !== 'IDLE'}
+          >
+            <div
+              className="absolute inset-6 rounded-full border border-[#e2b714]/30 transition-transform duration-200"
+              style={{ transform: `scale(${ringScale})` }}
+            />
+            <div className={`absolute inset-0 rounded-full blur-2xl transition-opacity ${status === 'LIVE' ? 'opacity-90' : 'opacity-30'}`} style={{ background: 'radial-gradient(circle, rgba(226,183,20,0.28), transparent 65%)' }} />
+            <div className="relative text-center px-6">
+              <div className={`mx-auto mb-4 w-3 h-3 rounded-full ${status === 'LIVE' ? (isAiSpeaking ? 'bg-[#39ff14] shadow-[0_0_18px_#39ff14]' : 'bg-[#e2b714] animate-pulse') : status === 'CONNECTING' ? 'bg-[#f5d76e] animate-pulse' : 'bg-white/20'}`} />
+              <div className="text-lg md:text-xl font-semibold tracking-[0.2em] uppercase">Seven</div>
+              <div className="text-xs mt-2 tracking-[0.35em] uppercase text-[#e2b714]/60">Tap to invoke</div>
             </div>
-          </div>
-        ))}
-      </div>
+          </button>
 
-      {/* Control Info */}
-      <div className="mt-24 flex flex-col items-center gap-4">
-        <div className="text-[9px] text-[#e2b714]/40 tracking-[0.8em] uppercase">
-          {status === 'IDLE' ? 'Protocol: Click Pyramids to Invoke' : `System: ${status}`}
+          <div className="w-full max-w-xl grid grid-cols-1 md:grid-cols-3 gap-4 text-xs uppercase tracking-widest text-center">
+            <div className="rounded-xl border border-[#e2b714]/20 p-4 bg-[#0a0a0a]/70">State: {status}</div>
+            <div className="rounded-xl border border-[#e2b714]/20 p-4 bg-[#0a0a0a]/70">Voice: {isAiSpeaking ? 'Responding' : 'Listening'}</div>
+            <div className="rounded-xl border border-[#e2b714]/20 p-4 bg-[#0a0a0a]/70">Signal: {Math.round(volume)}</div>
+          </div>
         </div>
-        {status === 'LIVE' && (
-          <div className="flex items-center gap-2">
-             <div className="w-1 h-1 bg-[#39ff14] rounded-full animate-ping"></div>
-             <span className="text-[8px] text-[#39ff14] tracking-widest uppercase">Direct_Link_Established</span>
-          </div>
-        )}
-      </div>
-
-      {/* Corner Data */}
-      <div className="absolute bottom-10 right-10 text-[8px] text-[#e2b714]/20 text-right uppercase tracking-widest">
-        Node: AlArab_Core_777<br/>
-        Auth: Master_Authorized
       </div>
     </div>
   );
